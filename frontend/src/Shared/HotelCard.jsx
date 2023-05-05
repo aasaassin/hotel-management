@@ -6,7 +6,7 @@ import calculateAvgRating from '../untils/avgRating.js';
 import './hotel-card.css';
 
 const HotelCard = ({ hotel }) => {
-    const { id, title, city, photo, price, featured, reviews } = hotel;
+    const { _id, title, city, photo, price, featured, reviews } = hotel;
 
     const { totalRating, avgRating } = calculateAvgRating(reviews);
 
@@ -31,14 +31,14 @@ const HotelCard = ({ hotel }) => {
                         </span>
                     </div>
                     <h5 className="hotel__title">
-                        <Link to={`/hotels/${id}`}>{title}</Link>
+                        <Link to={`/hotels/${_id}`}>{title}</Link>
                     </h5>
                     <div className="card__bottom d-flex align-items-center justify-content-between mt-3">
                         <h5>
                             ${price} <span>/day</span>{' '}
                         </h5>
                         <button className="btn booking__btn">
-                            <Link to={`/hotels/${id}`}>Book Now</Link>
+                            <Link to={`/hotels/${_id}`}>Book Now</Link>
                         </button>
                     </div>
                 </CardBody>

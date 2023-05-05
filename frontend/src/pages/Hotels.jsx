@@ -2,20 +2,27 @@ import React, { useEffect, useState } from 'react';
 import CommonSection from '../Shared/CommonSection';
 
 import '../styles/hotel.css';
-import hotelData from '../assets/data/hotels';
+
 import HotelCard from '../Shared/HotelCard';
 import SearchBar from '../Shared/SearchBar';
 import Newsletter from '../Shared/Newsletter';
 import { Container, Row, Col } from 'reactstrap';
 
+import useFetch from '../hooks/useFetch.js';
+import { BASE_URL } from '../utils/config.js';
+
 const Tours = () => {
     const [pageCount, setPageCount] = useState(0);
     const [page, setPage] = useState(0);
 
+    const { data: hotels, loading, error } = useFetch(`${BASE_URL}/hotels?page=${page}`);
+    const { data: hotelCount } = useFetch(`${BASE_URL}/hotels/search/getHotelCount`);
+
     useEffect(() => {
-        const pages = Math.ceil(5 / 4);
+        const pages = Math.ceil(hotelCount / 8);
         setPageCount(pages);
-    }, [page]);
+        window.scrollTo(0, 0);
+    }, [page, hotelCount, hotels]);
     return (
         <>
             <CommonSection title={'All Hotels'} />
@@ -28,26 +35,30 @@ const Tours = () => {
             </section>
             <section className="pt-0">
                 <Container>
-                    <Row>
-                        {hotelData?.map((hotel) => (
-                            <Col lg="3" className="mb-4" key={hotel.id}>
-                                <HotelCard hotel={hotel} />
+                    {loading && <h4 className="text-center pt-5">Loading.........</h4>}
+                    {error && <h4 className="text-center pt-5">{error}</h4>}
+                    {!loading && !error && (
+                        <Row>
+                            {hotels?.map((hotel) => (
+                                <Col lg="3" className="mb-4" key={hotel._id}>
+                                    <HotelCard hotel={hotel} />
+                                </Col>
+                            ))}
+                            <Col lg="12">
+                                <div className="pagination d-flex align-items-center justify-content-center mt-4 gap-3">
+                                    {[...Array(pageCount).keys()].map((number) => (
+                                        <span
+                                            key={number}
+                                            onClick={() => setPage(number)}
+                                            className={page === number ? 'active__page' : ''}
+                                        >
+                                            {number + 1}
+                                        </span>
+                                    ))}
+                                </div>
                             </Col>
-                        ))}
-                        <Col lg="12">
-                            <div className="pagination d-flex align-items-center justify-content-center mt-4 gap-3">
-                                {[...Array(pageCount).keys()].map((number) => (
-                                    <span
-                                        key={number}
-                                        onClick={() => setPage(number)}
-                                        className={page === number ? 'active__page' : ''}
-                                    >
-                                        {number + 1}
-                                    </span>
-                                ))}
-                            </div>
-                        </Col>
-                    </Row>
+                        </Row>
+                    )}
                 </Container>
             </section>
             <Newsletter />
