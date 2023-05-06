@@ -7,7 +7,7 @@ import { BASE_URL } from './../../utils/config.js';
 
 const FeaturedHotelList = () => {
     const { data: featuredHotels, error, loading } = useFetch(`${BASE_URL}/hotels/search/getFeaturedHotel`);
-    console.log(featuredHotels);
+
     return (
         <>
             {loading && <h4>Loading..............</h4>}
@@ -15,7 +15,7 @@ const FeaturedHotelList = () => {
             {!loading &&
                 !error &&
                 featuredHotels?.map((hotel) => (
-                    <Col lg="3" className="mb-4" key={hotel.id}>
+                    <Col lg="3" className="mb-4" key={hotel._id}>
                         <HotelCard hotel={hotel} />
                     </Col>
                 ))}

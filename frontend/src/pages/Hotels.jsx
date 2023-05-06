@@ -17,6 +17,7 @@ const Tours = () => {
 
     const { data: hotels, loading, error } = useFetch(`${BASE_URL}/hotels?page=${page}`);
     const { data: hotelCount } = useFetch(`${BASE_URL}/hotels/search/getHotelCount`);
+    console.log(hotels);
 
     useEffect(() => {
         const pages = Math.ceil(hotelCount / 8);

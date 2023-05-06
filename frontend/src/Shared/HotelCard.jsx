@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardBody } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import calculateAvgRating from '../untils/avgRating.js';
+import calculateAvgRating from '../utils/avgRating.js';
 
 import './hotel-card.css';
 

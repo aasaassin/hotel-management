@@ -1,18 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import '../styles/hotel-details.css';
 import { Container, Row, Col, Form, ListGroup } from 'reactstrap';
 import { useParams } from 'react-router-dom';
-import calculateAvgRating from '../untils/avgRating';
+import calculateAvgRating from '../utils/avgRating';
 import avatar from '../assets/images/avatar.jpg';
 import Booking from '../components/Booking/Booking';
 import Newsletter from '../Shared/Newsletter';
 import useFetch from './../hooks/useFetch.js';
 import { BASE_URL } from './../utils/config.js';
+import { AuthContext } from './../context/AuthContext.js';
 
 const TourDetails = () => {
     const { id } = useParams();
     const reviewsMsgRef = useRef('');
     const [hotelRating, setHotelRating] = useState(null);
+    const { user } = useContext(AuthContext);
 
     //fetch data
     const { data: hotel, loading, error } = useFetch(`${BASE_URL}/hotels/${id}`);
@@ -27,9 +29,38 @@ const TourDetails = () => {
 
     //submit request to the server
 
-    const submitHandler = (e) => {
+    const submitHandler = async (e) => {
         e.preventDefault();
         const reviewText = reviewsMsgRef.current.value;
+
+        try {
+            if (!user || user === undefined || user === null) {
+                alert('Please sign in');
+            }
+
+            const reviewObj = {
+                username: user?.username,
+                reviewText,
+                rating: hotelRating,
+            };
+
+            const res = await fetch(`${BASE_URL}/review/${id}`, {
+                method: 'post',
+                headers: {
+                    'content-type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify(reviewObj),
+            });
+
+            const result = await res.json();
+            if (!res.ok) {
+                return alert(result.message);
+            }
+            alert(result.message);
+        } catch (error) {
+            alert(error.message);
+        }
     };
 
     useEffect(() => {
@@ -120,19 +151,20 @@ const TourDetails = () => {
                                                 <div className="w-100">
                                                     <div className="d-flex align-items-center justify-content-between">
                                                         <div>
-                                                            <h5>Truong</h5>
+                                                            <h5> {reviews.username}</h5>
                                                             <p>
-                                                                {new Date('01-08-2023').toLocaleDateString(
+                                                                {new Date(reviews.createdAt).toLocaleDateString(
                                                                     'en-US',
                                                                     options,
                                                                 )}
                                                             </p>
                                                         </div>
                                                         <span className="d-flex align-items-center">
-                                                            5<i class="ri-star-fill"></i>
+                                                            {reviews.rating}
+                                                            <i class="ri-star-fill"></i>
                                                         </span>
                                                     </div>
-                                                    <h6>Hotel</h6>
+                                                    <h6>{reviews.reviewText}</h6>
                                                 </div>
                                             </div>
                                         ))}
